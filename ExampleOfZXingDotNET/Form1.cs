@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using ZXing;
+using ZXing.Windows.Compatibility;
 
 namespace ExampleOfZXingDotNET
 {
@@ -16,15 +13,22 @@ namespace ExampleOfZXingDotNET
         {
             InitializeComponent();
 
-            Bitmap img = new Bitmap("qrcode.gif");
+            string imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "examples", "qrcode.gif");
 
-            ZXing.BarcodeReader reader = new ZXing.BarcodeReader();
-            ZXing.Result result = reader.Decode(img);
-
-            if (result != null)
+            if (File.Exists(imagePath))
             {
-                textBox1.Text = result.BarcodeFormat.ToString();
-                textBox2.Text = result.Text;
+                using (Bitmap img = new Bitmap(imagePath))
+                {
+                    // Compatibility版のReaderを使用して.NET 8でのジェネリックエラーを回避
+                    var reader = new BarcodeReader();
+                    var result = reader.Decode(img);
+
+                    if (result != null)
+                    {
+                        textBox1.Text = result.BarcodeFormat.ToString();
+                        textBox2.Text = result.Text;
+                    }
+                }
             }
         }
     }

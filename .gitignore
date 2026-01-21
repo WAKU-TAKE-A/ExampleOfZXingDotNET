@@ -1,0 +1,73 @@
+# user add
+*.resx
+
+# ==========================================
+# C# / .NET 関連の除外
+# ==========================================
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+packages/
+App.g.i.cs
+GeneratedInternalTypeHelper.g.i.cs
+x64/
+
+# ==========================================
+# Python / 機械学習 関連の除外
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+.pytest_cache/
+.ipynb_checkpoints/
+
+# 学習済みモデル（大容量ファイル）
+*.pth
+*.onnx
+*.weights
+*.h5
+*.model
+
+# ==========================================
+# 画像検査・データセット関連（ノイズ削減）
+# ==========================================
+# 大量の画像データはAIのインデックスを圧迫するため除外
+# ※ フォルダ名は実環境に合わせて変更してください
+data/
+datasets/
+test_images/
+ng_samples/
+ok_samples/
+output/
+captures/
+
+# 画像ファイルそのもの
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+*.raw
+
+# ==========================================
+# ログ・バイナリ・OS関連
+# ==========================================
+*.log
+*.bak
+*.tmp
+*.exe
+*.dll
+*.so
+*.pyd
+
+# OS固有のゴミファイル
+.DS_Store
+Thumbs.db

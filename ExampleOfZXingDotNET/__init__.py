@@ -1,50 +1,54 @@
 # -*- coding: utf-8 -*-
 
 """
-ZXingDotNET for IronPython.
-
-* Environment variable 'IRONPYTHON_HOME' is required. It is the installation location of IronPython.
-* "zxing.dll", "zxing.presentation.dll" is required.
+ZXingDotNET for IronPython (.NET 8.0)
 """
 
 __author__  = "Nishida Takehito <takehito.nishida@gmail.com>"
-__version__ = "0.9.1.0"
-__date__    = "2018/12/18"
+__version__ = "0.9.8.0"
+__date__    = "2026/01/18"
 
-#
-# append path.
-#
-import os
-import os.path as path
+from pathlib import Path
 from sys import path as systemPath
 from System import Environment as env
-IRONPYTHON_HOME = env.GetEnvironmentVariable("IRONPYTHON_HOME")
 
+IRONPYTHON_HOME = env.GetEnvironmentVariable("IRONPYTHON_HOME")
 if IRONPYTHON_HOME is None:
     raise Exception("Error : Set path of IRONPYTHON_HOME.")
 
-IPY_LIB = path.join(IRONPYTHON_HOME, "Lib")
-IPY_DLLS = path.join(IRONPYTHON_HOME, "DLLs")
-IPY_ZXING = path.join(IRONPYTHON_HOME, "Lib\\zxing")
+CURRENT_DIR = Path(__file__).resolve().parent
+IRONPYTHON_HOME_PATH = Path(IRONPYTHON_HOME)
 
-_lstPath = []
-_lstPath.append(IPY_LIB)
-_lstPath.append(IPY_DLLS)
-_lstPath.append(IPY_ZXING)
+_lstPath = [
+    IRONPYTHON_HOME_PATH / "Lib",
+    IRONPYTHON_HOME_PATH / "DLLs",
+    CURRENT_DIR
+]
 
 for i in _lstPath:
-    if os.path.exists(i):
-        systemPath.append(i)
-    else:
-        raise Exception("There is no '" + i + "'.")
+    if not i.exists():
+        raise FileNotFoundError("Required directory not found: {0}".format(i))
+    if str(i) not in systemPath:
+        systemPath.append(str(i))
 
-#
-# Import modules.
-#
 import clr
-clr.AddReferenceByPartialName("System.Drawing")
-clr.AddReferenceToFile("zxing.dll")
-clr.AddReferenceToFile("zxing.presentation.dll")
+
+# 出力されたDLL群を優先的に参照し、ランタイムの不整合を防ぐ
+dlls = [
+    "System.Drawing.Common.dll",
+    "zxing.dll", 
+    "ZXing.Windows.Compatibility.dll"
+]
+
+for dll in dlls:
+    dll_path = CURRENT_DIR / dll
+    if dll_path.exists():
+        clr.AddReferenceToFileAndPath(str(dll_path))
+
 import ZXing
+import ZXing.Windows.Compatibility
 from System.Drawing import Bitmap
-from System.Drawing.Imaging import PixelFormat
+
+def getReader():
+    """互換版のBarcodeReaderを返します"""
+    return ZXing.Windows.Compatibility.BarcodeReader()
